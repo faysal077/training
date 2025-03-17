@@ -25,20 +25,24 @@
                     <p>Total Participants</p>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="small-box bg-warning p-3 text-white text-center">
-                    <h3 id="total-expenses">Loading...</h3>
-                    <p>Total Financial Expenses</p>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="small-box bg-danger p-3 text-white text-center">
-                    <h3 id="total-trainings">Loading...</h3>
-                    <p>Total Trainings</p>
-                </div>
-            </div>
-        </div>
+		</div>
     </div>
+	<div class="container mt-4">
+		<div class="row">
+				<div class="col-lg-3 col-md-6">
+					<div class="small-box bg-warning p-3 text-white text-center">
+						<h3 id="total-expenses">Loading...</h3>
+						<p>Total Financial Expenses</p>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="small-box bg-danger p-3 text-white text-center">
+						<h3 id="total-trainings">Loading...</h3>
+						<p>Total Trainings</p>
+					</div>
+				</div>
+			</div>
+	</div>
 	<div class="row mt-4">
 		<div class="col-lg-6">
 			<div class="card">

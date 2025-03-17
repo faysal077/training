@@ -5,7 +5,7 @@ include 'db_connection.php';
 $training_id = $_GET['training_id'] ?? null;
 $batch_id = $_GET['batch_id'] ?? null;
 $batch_number = $_GET['batch_number'] ?? '';
-
+// echo $training_id," ",$batch_id," ",$batch_number;
 // Ensure Training ID is provided
 if (!$training_id) {
     die("Error: Training ID is required.");
@@ -19,12 +19,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $gender = $_POST['gender'];
     $contact = $_POST['contact'];
     $email = $_POST['email'];
-    $official_id = $_POST['official_id']; // New field
+    $Official_ID = $_POST['Official_ID']; // New field
 
     // Step 1: Check if the person is already enrolled in any batch for this training
-    $check_query = "SELECT batch_id, batch_number FROM participants WHERE training_id = ? AND official_id = ?";
+    $check_query = "SELECT batch_id, batch_number FROM participants WHERE training_id = ? AND Official_ID = ?";
     $stmt = mysqli_prepare($conn, $check_query);
-    mysqli_stmt_bind_param($stmt, "is", $training_id, $official_id);
+    mysqli_stmt_bind_param($stmt, "is", $training_id, $Official_ID);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
 
@@ -56,11 +56,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $batch_id = mysqli_insert_id($conn); // Get the new batch ID
         }
 
+        // Step 2.5: Retrieve total_training_hours from batches
+        $hours_query = "SELECT total_training_hours FROM batches WHERE id = ?";
+		echo " ",$hours_query;
+        $stmt = mysqli_prepare($conn, $hours_query);
+        mysqli_stmt_bind_param($stmt, "i", $batch_id);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $row = mysqli_fetch_assoc($result);
+        $total_training_hours = $row['total_training_hours'] ?? 0; // Default to 0 if NULL
+
         // Step 3: Insert into Participants
-        $participant_query = "INSERT INTO participants (training_id, batch_id, batch_number, name, designation, office_address, gender, contact, email, official_id) 
-                              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $participant_query = "INSERT INTO participants (training_id, batch_id, batch_number, name, designation, office_address, gender, contact, email, Official_ID, total_training_hours) 
+                              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = mysqli_prepare($conn, $participant_query);
-        mysqli_stmt_bind_param($stmt, "iiisssssss", $training_id, $batch_id, $batch_number, $name, $designation, $office, $gender, $contact, $email, $official_id);
+        mysqli_stmt_bind_param($stmt, "iiisssssssi", $training_id, $batch_id, $batch_number, $name, $designation, $office, $gender, $contact, $email, $Official_ID, $total_training_hours);
         mysqli_stmt_execute($stmt);
 
         // Commit transaction
@@ -84,6 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -99,7 +110,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     </style>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 </head>
 <body>
 <?php include 'navbar.php'; ?> <!-- Include the navbar -->
@@ -109,6 +123,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="alert alert-danger">Error adding participant. Please try again.</div>
         <?php endif; ?>
         <form method="POST" action="">
+			<div class="row mb-3 align-items-center">
+				<label class="col-md-3 form-label">আই ডি নম্বর</label>
+				<div class="col-md-6">
+					<input type="text" name="Official_ID_search" id="Official_ID_search" class="form-control" required>
+				</div>
+				<div class="col-md-3">
+					<button type="button" id="searchId" class="btn btn-primary">Search</button>
+				</div>
+			</div>
             <div class="row mb-3 align-items-center">
                 <label for="name" class="col-md-3 form-label">Name</label>
                 <div class="col-md-9">
@@ -117,9 +140,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
             
             <div class="row mb-3 align-items-center">
-                <label for="official_id" class="col-md-3 form-label">আই ডি নম্বর</label>
+                <label for="Official_ID" class="col-md-3 form-label">আই ডি নম্বর</label>
                 <div class="col-md-9">
-                    <input type="text" name="official_id" class="form-control" required> <!-- Remove required --!>
+                    <input type="text" name="Official_ID" class="form-control" required> <!-- Remove required --!>
                 </div>
             </div>
             
@@ -427,6 +450,77 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+</script>
+
+<script>
+<script>
+$(document).ready(function(){
+    $("#searchId").click(function(){
+        let Official_ID = $("#Official_ID_search").val().trim();
+
+        // Check if ID is entered
+        if (Official_ID === "") {
+            Toastify({
+                text: "Please enter an ID number",
+                duration: 3000,
+                gravity: "top", 
+                position: "right", 
+                backgroundColor: "red",
+            }).showToast();
+            return;
+        }
+
+        console.log("Searching for ID:", Official_ID); // Debugging
+
+        // AJAX request to check if ID exists
+        $.ajax({
+            url: "add_search_participant.php",  // PHP script to handle search
+            method: "POST",
+            data: { Official_ID: Official_ID },
+            dataType: "json",
+            success: function(response) {
+                console.log("AJAX Response:", response); // Debugging
+
+                if (response.exists) {
+                    // Auto-fill input fields if participant exists
+                    $("#name").val(response.name);
+                    $("#designation").val(response.designation);
+                    $("#office").val(response.office_address); 
+                    $("#contact").val(response.contact);
+                    $("#email").val(response.email);
+
+                    Toastify({
+                        text: "Participant found!",
+                        duration: 3000,
+                        gravity: "top", 
+                        position: "right", 
+                        backgroundColor: "green",
+                    }).showToast();
+                } else {
+                    // Show notification if ID not found
+                    Toastify({
+                        text: "This person is not registered yet",
+                        duration: 3000,
+                        gravity: "top", 
+                        position: "right", 
+                        backgroundColor: "orange",
+                    }).showToast();
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error:", xhr.responseText);
+                Toastify({
+                    text: "Server error! Please try again later.",
+                    duration: 3000,
+                    gravity: "top", 
+                    position: "right", 
+                    backgroundColor: "red",
+                }).showToast();
+            }
+        });
+    });
+});
+</script>
 </script>
 
 
