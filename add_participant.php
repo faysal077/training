@@ -126,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 			<div class="row mb-3 align-items-center">
 				<label class="col-md-3 form-label">আই ডি নম্বর</label>
 				<div class="col-md-6">
-					<input type="text" name="Official_ID_search" id="Official_ID_search" class="form-control" required>
+					<input type="text" name="Official_ID_1" id="Official_ID_1" class="form-control" required>
 				</div>
 				<div class="col-md-3">
 					<button type="button" id="searchId" class="btn btn-primary">Search</button>
@@ -135,14 +135,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="row mb-3 align-items-center">
                 <label for="name" class="col-md-3 form-label">Name</label>
                 <div class="col-md-9">
-                    <input type="text" name="name" class="form-control" required>
+                    <input type="text" id="name" name="name" class="form-control" required>
                 </div>
             </div>
             
             <div class="row mb-3 align-items-center">
                 <label for="Official_ID" class="col-md-3 form-label">আই ডি নম্বর</label>
                 <div class="col-md-9">
-                    <input type="text" name="Official_ID" class="form-control" required> <!-- Remove required --!>
+                    <input type="text" id="Official_ID" name="Official_ID" class="form-control" required> <!-- Remove required --!>
                 </div>
             </div>
             
@@ -153,6 +153,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <div class="dropdown">
                         <input 
                             type="text" 
+							id="designation"
                             name="designation" 
                             id="designationInput" 
                             class="form-control dropdown-toggle" 
@@ -187,6 +188,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <div class="dropdown">
                         <input 
                             type="text" 
+							id="office"
                             name="office" 
                             id="officeInput" 
                             class="form-control dropdown-toggle" 
@@ -206,7 +208,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="row mb-3 align-items-center">
                 <label for="gender" class="col-md-3 form-label">Gender</label>
                 <div class="col-md-9">
-                    <select name="gender" class="form-control">
+                    <select id="gender" name="gender" class="form-control">
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
                     </select>
@@ -216,14 +218,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="row mb-3 align-items-center">
                 <label for="contact" class="col-md-3 form-label">Contact</label>
                 <div class="col-md-9">
-                    <input type="text" name="contact" class="form-control" required>
+                    <input type="text" name="contact" id="contact" class="form-control" required>
                 </div>
             </div>
             
             <div class="row mb-3 align-items-center">
                 <label for="email" class="col-md-3 form-label">Email</label>
                 <div class="col-md-9">
-                    <input type="email" name="email" class="form-control" required>
+                    <input type="email" id="email" name="email" class="form-control" required>
                 </div>
             </div>
             
@@ -452,11 +454,11 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
-<script>
+
 <script>
 $(document).ready(function(){
     $("#searchId").click(function(){
-        let Official_ID = $("#Official_ID_search").val().trim();
+        let Official_ID = $("#Official_ID_1").val().trim();
 
         // Check if ID is entered
         if (Official_ID === "") {
@@ -470,7 +472,7 @@ $(document).ready(function(){
             return;
         }
 
-        console.log("Searching for ID:", Official_ID); // Debugging
+        console.log("Searching for ID:", Official_ID_1); // Debugging
 
         // AJAX request to check if ID exists
         $.ajax({
@@ -488,6 +490,8 @@ $(document).ready(function(){
                     $("#office").val(response.office_address); 
                     $("#contact").val(response.contact);
                     $("#email").val(response.email);
+					$("#gender").val(response.gender);
+					$("#Official_ID").val(response.Official_ID);
 
                     Toastify({
                         text: "Participant found!",
@@ -520,7 +524,7 @@ $(document).ready(function(){
         });
     });
 });
-</script>
+
 </script>
 
 
