@@ -20,8 +20,6 @@ if (mysqli_num_rows($result) > 0) {
                         <h5 class='card-title fw-bold'>Batch: {$row['batch_number']}</h5>
                         <p class='card-text mb-1'><strong>Duration:</strong> {$row['start_date']} to {$row['end_date']}</p>
                         <p class='card-text mb-1'><strong>Fiscal Year:</strong> {$row['fiscal_year']}</p>
-                        <p class='card-text mb-1'><strong>Organizer:</strong> {$row['organizer']}</p>
-                        <p class='card-text mb-3'><strong>Type:</strong> {$row['training_type']}</p>
                         <div class='d-flex justify-content-between'>
                             <a href='participants_list.php?training_id={$training_id}&batch_id={$row['id']}' class='btn btn-sm btn-success'>Participants</a>
                             <a href='financial_clearance.php?training_id={$training_id}&batch_id={$row['id']}' class='btn btn-sm btn-warning'>Financial Clearance</a>

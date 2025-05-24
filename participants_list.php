@@ -56,10 +56,12 @@ function convertToBanglaNumber($number) {
             <tr>
                 <th>ক্রমিক</th>
                 <th>নাম</th>
+				<th>নথি নম্বর</th>
                 <th>পদবি</th>
                 <th>কার্যালয়</th>
                 <th>মোবাইল</th>
                 <th>ইমেইল</th>
+				<th>সম্পাদনা</th>
                 <th>মুছুন</th>
             </tr>
         </thead>
@@ -70,10 +72,14 @@ function convertToBanglaNumber($number) {
                 <tr>
                     <td><?php echo convertToBanglaNumber($serial++); ?></td>
                     <td><?php echo $row['name']; ?></td>
+					<td><?php echo $row['Official_ID']; ?></td>
                     <td><?php echo $row['designation']; ?></td>
                     <td><?php echo $row['office_address']; ?></td>
                     <td><?php echo $row['contact']; ?></td>
                     <td><?php echo $row['email']; ?></td>
+					<td>
+						<a href="update_participant.php?id=<?php echo $row['id']; ?>" class="btn btn-warning btn-sm">✏️</a>
+					</td>
                     <td>
                         <button class="btn btn-danger btn-sm" onclick="confirmDelete(<?php echo $row['id']; ?>)">
                             ❌
